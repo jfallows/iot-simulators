@@ -416,47 +416,6 @@
             }
         }
     },
-    "protobuf-fixed": {
-        "name": "protobuf-fixed",
-        "version": "1.0.3",
-        "local": true,
-        "user": true,
-        "nodes": {
-            "encode": {
-                "name": "encode",
-                "types": [
-                    "encode"
-                ],
-                "enabled": true,
-                "local": true,
-                "user": false,
-                "module": "protobuf-fixed",
-                "file": "/data/node_modules/protobuf-fixed/src/nodes/encode.js"
-            },
-            "decode": {
-                "name": "decode",
-                "types": [
-                    "decode"
-                ],
-                "enabled": true,
-                "local": true,
-                "user": false,
-                "module": "protobuf-fixed",
-                "file": "/data/node_modules/protobuf-fixed/src/nodes/decode.js"
-            },
-            "file": {
-                "name": "file",
-                "types": [
-                    "protobuf-file"
-                ],
-                "enabled": true,
-                "local": true,
-                "user": false,
-                "module": "protobuf-fixed",
-                "file": "/data/node_modules/protobuf-fixed/src/nodes/protofile.js"
-            }
-        }
-    },
     "node-red-contrib-influxdb": {
         "name": "node-red-contrib-influxdb",
         "version": "0.6.1",
