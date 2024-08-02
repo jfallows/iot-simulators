@@ -40,6 +40,9 @@ bindings:
     type: mqtt
     kind: server
     exit: north_mqtt_kafka_mapping
+    telemetry:
+      metrics:
+        - stream.*
 
   # MQTT messages to Kafka topics
   north_mqtt_kafka_mapping:
@@ -72,11 +75,28 @@ bindings:
   north_kafka_cache_client:
     type: kafka
     kind: cache_client
+    options:
+      topics:
+        - name: iot-mqtt-*
+          value:
+            model: protobuf
+            catalog:
+              local:
+                - subject: sparkplug_b
+                  record: Payload
     exit: south_kafka_cache_server
   south_kafka_cache_server:
     type: kafka
     kind: cache_server
     options:
+      topics:
+        - name: iot-mqtt-*
+          value:
+            model: protobuf
+            catalog:
+              local:
+                - subject: sparkplug_b
+                  record: Payload
       bootstrap:
         - iot-mqtt-source
         - iot-mqtt-sink
@@ -105,7 +125,26 @@ bindings:
     type: tcp
     kind: client
 
+catalogs:
+  local:
+    type: filesystem
+    options:
+      subjects:
+        sparkplug_b:
+          path: sparkplug_b.proto3
+
 telemetry:
+  metrics:
+    - stream.active.received
+    - stream.active.sent
+    - stream.opens.received
+    - stream.opens.sent
+    - stream.data.received
+    - stream.data.sent
+    - stream.errors.received
+    - stream.errors.sent
+    - stream.closes.received
+    - stream.closes.sent
   exporters:
     stdout_logs_exporter:
       type: stdout
