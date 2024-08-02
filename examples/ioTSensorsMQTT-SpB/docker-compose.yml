@@ -108,6 +108,8 @@ services:
     restart: unless-stopped
     environment:
       KAFKA_BOOTSTRAP_SERVER: kafka:9092
+#      KAFKA_API_KEY: ${KAFKA_API_KEY}
+#      KAFKA_API_SECRET: ${KAFKA_API_SECRET}
     container_name: mqtt
     volumes:
       - ./zilla/:/etc/zilla/
