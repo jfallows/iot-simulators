@@ -50,6 +50,22 @@ bindings:
         sessions: mqtt-sessions
         messages: mqtt-messages
         retained: mqtt-retained
+      clients:
+        - spBv1.0/+/+/{identity}/#
+    routes:
+      - when:
+          - publish:
+              - topic: spBv1.0/#
+        with:
+          messages: iot-mqtt-source
+        exit: north_kafka_cache_client
+      - when:
+          - subscribe:
+              - topic: spBv1.0/#
+        with:
+          # TODO: change to iot-mqtt-sink
+          messages: iot-mqtt-source
+        exit: north_kafka_cache_client
     exit: north_kafka_cache_client
 
   # Kafka sync layer
@@ -62,6 +78,8 @@ bindings:
     kind: cache_server
     options:
       bootstrap:
+        - iot-mqtt-source
+        - iot-mqtt-sink
         - mqtt-messages
         - mqtt-retained
     exit: south_kafka_client

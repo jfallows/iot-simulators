@@ -121,10 +121,32 @@ services:
       kafka-init:
         condition: service_completed_successfully
 
+  kafka-init:
+    image: bitnami/kafka:3.2
+    container_name: kafka-init
+    networks:
+      - kafka-net
+    working_dir: /opt/bitnami/kafka/bin
+    entrypoint: /bin/bash -c
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: kafka:9092
+    command:
+      - |
+        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic iot-mqtt-source &&
+        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic iot-mqtt-sink &&
+        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-messages &&
+        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-retained --config cleanup.policy=compact &&
+        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-sessions --config cleanup.policy=compact
+    depends_on:
+      kafka:
+        condition: service_healthy
+
   kafka:
     image: bitnami/kafka:3.2
     container_name: kafka
     restart: unless-stopped
+    ports:
+      - 9092:9092
     networks:
       - kafka-net
     environment:
@@ -144,24 +166,6 @@ services:
       timeout: 3s
       retries: 5
       test: ["CMD", "bash", "-c", "echo -n '' > /dev/tcp/127.0.0.1/29092"]
-
-  kafka-init:
-    image: bitnami/kafka:3.2
-    container_name: kafka-init
-    networks:
-      - kafka-net
-    working_dir: /opt/bitnami/kafka/bin
-    entrypoint: /bin/bash -c
-    environment:
-      KAFKA_BOOTSTRAP_SERVER: kafka:9092
-    command:
-      - |
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --topic mqtt-messages &&
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --topic mqtt-retained --config cleanup.policy=compact &&
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --topic mqtt-sessions --config cleanup.policy=compact
-    depends_on:
-      kafka:
-        condition: service_healthy
 
   kafka-ui:
     image: ghcr.io/kafbat/kafka-ui:latest
