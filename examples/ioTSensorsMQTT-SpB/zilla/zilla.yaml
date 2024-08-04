@@ -101,7 +101,7 @@ bindings:
                   record: Payload
       bootstrap:
         - iot-mqtt-source
-        - iot-mqtt-sink
+        #- iot-mqtt-sink
         - mqtt-messages
         - mqtt-retained
     exit: south_kafka_client
