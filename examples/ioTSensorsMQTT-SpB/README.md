@@ -28,4 +28,4 @@ Node-RED sparkplug flow visualization is available at http://localhost:1880/.
 
 Grafana is available at http://localhost:3000/.
 
-Note: Grafana credetials are admin/mypasswordmypasswordmypassword.
+Note: Grafana credentials are admin/mypasswordmypasswordmypassword.
