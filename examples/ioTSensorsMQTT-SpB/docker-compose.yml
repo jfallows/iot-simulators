@@ -107,9 +107,9 @@ services:
       - kafka-net
     restart: unless-stopped
     environment:
-      KAFKA_BOOTSTRAP_SERVER: kafka:9092
-#      KAFKA_API_KEY: ${KAFKA_API_KEY}
-#      KAFKA_API_SECRET: ${KAFKA_API_SECRET}
+      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER:-kafka:9092}
+      #KAFKA_API_KEY: ${KAFKA_API_KEY}
+      #KAFKA_API_SECRET: ${KAFKA_API_SECRET}
     container_name: mqtt
     volumes:
       - ./zilla/:/etc/zilla/
@@ -131,14 +131,25 @@ services:
     working_dir: /opt/bitnami/kafka/bin
     entrypoint: /bin/bash -c
     environment:
-      KAFKA_BOOTSTRAP_SERVER: kafka:9092
+      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER:-kafka:9092}
+      #KAFKA_API_KEY: ${KAFKA_API_KEY}
+      #KAFKA_API_SECRET: ${KAFKA_API_SECRET}
     command:
       - |
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic iot-mqtt-source &&
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic iot-mqtt-sink &&
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-messages &&
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-retained --config cleanup.policy=compact &&
-        kafka-topics.sh --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-sessions --config cleanup.policy=compact
+        touch config.properties
+
+        #echo "security.protocol=SASL_SSL
+        #sasl.mechanism=PLAIN
+        #sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \\
+        #    username=\"$${KAFKA_API_KEY}\" \\
+        #    password=\"$${KAFKA_API_SECRET}\";
+        #" >> config.properties
+
+        kafka-topics.sh --command-config config.properties --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic iot-mqtt-source &&
+        kafka-topics.sh --command-config config.properties --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic iot-mqtt-sink &&
+        kafka-topics.sh --command-config config.properties --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-messages &&
+        kafka-topics.sh --command-config config.properties --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-retained --config cleanup.policy=compact &&
+        kafka-topics.sh --command-config config.properties --bootstrap-server $${KAFKA_BOOTSTRAP_SERVER} --create --if-not-exists --partitions 2 --topic mqtt-sessions --config cleanup.policy=compact
     depends_on:
       kafka:
         condition: service_healthy
