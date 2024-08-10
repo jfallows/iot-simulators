@@ -30,10 +30,7 @@ bindings:
   north_ws_server:
     type: ws
     kind: server
-    routes:
-      - when:
-          - protocol: mqtt
-        exit: north_mqtt_server
+    exit: north_mqtt_server
 
   # MQTT server
   north_mqtt_server:
