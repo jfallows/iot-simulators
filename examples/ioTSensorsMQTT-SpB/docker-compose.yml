@@ -97,7 +97,7 @@ services:
 ################### MQTT/ZILLA/KAFKA #####################
 ##########################################################
   mqtt:
-    image:  ghcr.io/aklivity/zilla:0.9.88
+    image:  ghcr.io/aklivity/zilla:latest
     ports:
       - 1883:1883
       - 8083:8083
